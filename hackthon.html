@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hackthon Welcome → OG</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ff6b35;
+      --text:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg,#071029 0%, #0f1724 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app {
+      width:100%;
+      max-width:760px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      overflow:hidden;
+    }
+
+    /* shared view layout */
+    .view{
+      padding:48px;
+      text-align:center;
+      min-height:320px;
+      transition: transform .45s cubic-bezier(.2,.9,.3,1), opacity .35s;
+    }
+
+    /* welcome view */
+    .welcome h1{
+      font-size:2.2rem;
+      margin:0 0 12px;
+      letter-spacing:1px;
+    }
+    .welcome p{
+      margin:0 0 26px;
+      opacity:.85;
+    }
+    .btn {
+      display:inline-block;
+      padding:14px 28px;
+      background: linear-gradient(90deg,var(--accent), #ff9b66);
+      color:#06121a;
+      font-weight:700;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-size:1rem;
+      box-shadow: 0 8px 18px rgba(255,107,53,0.18);
+      transition: transform .12s ease, box-shadow .12s;
+    }
+    .btn:active{ transform: translateY(2px) }
+    .sub{
+      margin-top:18px;
+      font-size:.92rem;
+      opacity:.8;
+    }
+
+    /* og view */
+    .og{
+      display:none;
+      background: linear-gradient(180deg, rgba(255,107,53,0.04), rgba(0,0,0,0));
+    }
+    .og .big{
+      font-size:6.2rem;
+      line-height:1;
+      margin:0;
+      letter-spacing:6px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      transform:translateY(8px);
+    }
+    .og .big .og-text{
+      font-weight:900;
+      color: #fff;
+      text-shadow: 0 6px 26px rgba(0,0,0,0.6);
+      font-family: "Inter", "Segoe UI", sans-serif;
+    }
+    .og .big .fire{
+      font-size:1.05em;
+      transform-origin:center;
+      filter: drop-shadow(0 8px 18px rgba(255,107,53,0.25));
+      animation: flicker 1.1s infinite;
+      will-change: transform, opacity, filter;
+    }
+    .og p{
+      margin-top:18px;
+      opacity:.9;
+      font-size:1.05rem;
+    }
+
+    /* back button small */
+    .back {
+      margin-top:30px;
+      display:inline-block;
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(255,255,255,0.06);
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+      opacity:.95;
+    }
+
+    @keyframes flicker{
+      0% { transform: scale(1) rotate(-6deg); opacity:1; filter:drop-shadow(0 10px 20px rgba(255,107,53,0.35)); }
+      30% { transform: scale(1.06) rotate(6deg); opacity:.95; filter:drop-shadow(0 14px 26px rgba(255,140,80,0.35)); }
+      60% { transform: scale(0.98) rotate(-3deg); opacity:.98; filter:drop-shadow(0 8px 18px rgba(255,90,40,0.28)); }
+      100% { transform: scale(1) rotate(0deg); opacity:1; filter:drop-shadow(0 10px 20px rgba(255,107,53,0.32)); }
+    }
+
+    /* simple page transition classes */
+    .hidden { display:none; }
+    .fade-out { opacity:0; transform: translateY(-10px) scale(.995); pointer-events:none }
+    .fade-in { opacity:1; transform: translateY(0) scale(1) }
+    /* responsive */
+    @media (max-width:480px){
+      .og .big { font-size:4.2rem; gap:12px }
+      .welcome h1 { font-size:1.6rem }
+      .view { padding:28px }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Hackthon app">
+    <!-- WELCOME VIEW -->
+    <section id="welcome" class="view welcome fade-in" aria-hidden="false">
+      <h1>Welcome to Hackthon</h1>
+      <p>Click the button below to continue to the OG page.</p>
+      <button class="btn" id="nextBtn" aria-controls="og" aria-label="Go to OG page">Go Next</button>
+      <div class="sub">Tip: use Live Server in VS Code to preview.</div>
+    </section>
+
+    <!-- OG VIEW (same file) -->
+    <section id="og" class="view og hidden" aria-hidden="true">
+      <div class="big" role="img" aria-label="OG with fire symbol">
+        <span class="og-text">OG</span>
+        <span class="fire" aria-hidden="true">🔥</span>
+      </div>
+      <p>You have reached the OG page — bringing the heat! 🔥</p>
+      <button class="back" id="backBtn" aria-controls="welcome">Back</button>
+    </section>
+  </div>
+
+  <script>
+    // simple view switcher without navigating to another HTML file
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    const welcome = document.getElementById('welcome');
+    const og = document.getElementById('og');
+
+    function showOG(){
+      // animate out welcome
+      welcome.classList.add('fade-out');
+      setTimeout(() => {
+        welcome.classList.add('hidden');
+        welcome.classList.remove('fade-out','fade-in');
+        welcome.setAttribute('aria-hidden','true');
+
+        og.classList.remove('hidden');
+        og.classList.add('fade-in');
+        og.setAttribute('aria-hidden','false');
+        // focus for accessibility
+        og.querySelector('.og-text').focus?.();
+      }, 300);
+    }
+
+    function showWelcome(){
+      og.classList.add('fade-out');
+      setTimeout(() => {
+        og.classList.add('hidden');
+        og.classList.remove('fade-out','fade-in');
+        og.setAttribute('aria-hidden','true');
+
+        welcome.classList.remove('hidden');
+        welcome.classList.add('fade-in');
+        welcome.setAttribute('aria-hidden','false');
+        nextBtn.focus();
+      }, 250);
+    }
+
+    nextBtn.addEventListener('click', showOG);
+    backBtn.addEventListener('click', showWelcome);
+
+    // support keyboard Enter/Space on the main button if focused
+    nextBtn.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showOG(); }
+    });
+  </script>
+</body>
+</html>
